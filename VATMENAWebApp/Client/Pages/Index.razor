@@ -1,0 +1,36 @@
+﻿@page "/"
+@inherits LayoutComponentBase
+@layout EmptyLayout
+@inject NavigationManager NavManager
+
+
+<div id="introCarousel" class="carousel slide carousel-fade shadow-2-strong jarallax" data-jarallax='{"speed": 0.2}' data-mdb-ride="carousel">
+    <!-- Inner -->
+    <div class="carousel-inner">
+        <!-- Single item -->
+        <div class="carousel-item active jarallax" data-jarallax='{"speed": 0.2}'>
+            <div class="mask">
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="text-white text-center" style="width: 30%;">
+                        <img src="/images/Logo.png" style="width: 100%;" loading="lazy" />
+                        <div>
+                            <p class="lead m-0">
+                                Middle East & North Africa Divison is part of the
+                                Europe, Middle East & Africa (EMEA) Region on the VATSIM Network.
+                            </p>
+                        </div>
+
+                        <MudButton OnClick="Login" Variant="Variant.Filled" Color="Color.Primary" Style="margin-top: 2%;">Login to VATMENA</MudButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected void Login()
+    {
+        NavManager.NavigateTo("https://auth.vatsim.net/oauth/authorize?client_id=866&redirect_uri=https://test.vatsim.me:44347/authentication&response_type=code&scope=full_name+vatsim_details+email+country");
+    }
+}

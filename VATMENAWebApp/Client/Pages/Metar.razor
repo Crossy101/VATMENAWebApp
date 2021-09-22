@@ -1,0 +1,74 @@
+﻿@page "/Metar"
+@using VATMENAWebApp.Shared
+@using VATMENAWebApp.Shared.Models.VATSIM.MetarData;
+@inject HttpClient httpClient
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<AirportMetar>>>(ServerReload))" Bordered="true" Striped="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">METAR Data</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search ICAO" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>ICAO</MudTh>
+        <MudTh>METAR</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ICAO">@context.ICAO</MudTd>
+        <MudTd DataLabel="Metar">@context.Metar</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Search for an Airport!</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<AirportMetar> pagedData;
+    private MudTable<AirportMetar> table;
+
+    private int totalItems;
+    private string searchString = null;
+
+    /// <summary>
+    /// Here we simulate getting the paged, filtered and ordered data from the server
+    /// </summary>
+    private async Task<TableData<AirportMetar>> ServerReload(TableState state)
+    {
+        if (String.IsNullOrEmpty(searchString))
+            searchString = "O";
+
+        IEnumerable<AirportMetar> data = await httpClient.GetFromJsonAsync<List<AirportMetar>>($"Vatsim/Data/Metar?search={searchString}");
+        await Task.Delay(300);
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.ICAO.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return false;
+        }).ToArray();
+        totalItems = data.Count();
+
+        foreach (var item in data)
+        {
+            Console.WriteLine(item.ICAO);
+        }
+
+        pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<AirportMetar>() { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+}

@@ -1,0 +1,41 @@
+﻿@page "/profile"
+@using VATMENAWebApp.Shared.PageModels;
+
+<h3>Profile</h3>
+
+<MudCard>
+    <MudCardContent>
+        <MudForm>
+            <MudTextField T="string" Label="VATSIM CID" Disabled="true" Value="@User.Member.Id" />
+            <MudTextField T="string" Label="ATC Rating" Disabled="true" Value="@fullATCRating" />
+            <MudTextField T="string" Label="Pilot Rating" Disabled="true" Value="@fullPilotRating" />
+            <MudTextField T="string" Label="Full Name" Disabled="true" Value="@User.PersonalDetails.FullName" />
+            <MudTextField T="string" Label="Email" Disabled="true" Value="@User.PersonalDetails.Email" />
+            <MudTextField T="string" Label="Region" Disabled="true" Value="@User.Region.Name" />
+            <MudTextField T="string" Label="Division" Disabled="true" Value="@User.Division.Name" />
+            <MudTextField T="string" Label="Sub Division" Disabled="true" Value="@User.SubDivision.Fullname" />
+            <MudTextField T="string" Label="Country" Disabled="true" Value="@User.PersonalDetails.Country" />
+        </MudForm>
+    </MudCardContent>
+</MudCard>
+@code {
+    [CascadingParameter(Name = "User")]
+    public CurrentUser User { get; set; }
+
+    public string fullATCRating = null;
+    public string fullPilotRating = null;
+
+    protected override void OnInitialized()
+    {
+        if(User.PilotRating == null)
+            fullPilotRating = "No Pilot Rating";
+        else
+            fullPilotRating = $"{User.PilotRating.Short_name} - {User.PilotRating.Long_name}";
+
+        if(User.ATCRating == null)
+            fullATCRating = $"No ATC Rating";
+        else
+            fullATCRating = $"{User.ATCRating.Short} - {User.ATCRating.Long}";
+
+    }
+}

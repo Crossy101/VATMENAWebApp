@@ -1,0 +1,119 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@using VATMENAWebApp.Shared.PageModels;
+
+<MudThemeProvider Theme="MyCustomTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@if(authenticated && User != null) {
+    <div class="page">
+        <div class="main">
+            <MudLayout>
+                <MudAppBar Elevation="1" Dense="@dense">
+                    <MudContainer>@currentDate.ToString() UTC</MudContainer>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+                </MudAppBar>
+                <MudDrawer @bind-Open="@open" ClipMode="clipMode" Breakpoint="@breakpoint" PreserveOpenState="@preserveOpenState" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+                    <MudNavMenu Class="mud-width-full">
+                        <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
+                        <MudNavLink Href="/servers" Icon="fas fa-server">Servers</MudNavLink>
+                        <MudNavLink Href="/billing" Icon="fas fa-receipt">Billing</MudNavLink>
+                        <MudNavLink Href="/events" Icon="fas fa-calendar-check">Events</MudNavLink>
+                
+                        <MudNavGroup Title="Account Settings" Icon="fas fa-cogs">
+                            <MudNavLink Href="/profile" Icon="fas fa-users" IconColor="Color.Success">Profile</MudNavLink>
+                            <MudNavLink Href="/security" Icon="fas fa-user-shield" IconColor="Color.Info">Security</MudNavLink>
+                        </MudNavGroup>
+                    </MudNavMenu>
+                </MudDrawer>
+                <MudMainContent>
+                    <MudContainer Class="mt-6">
+                        <CascadingValue Value="User" Name="User">
+                            @Body
+                        </CascadingValue>
+                    </MudContainer>
+                </MudMainContent>
+            </MudLayout>
+        </div>
+    </div>
+} else {
+    <div class="page" style="height: 100vh;">
+        <div class="main" style="height: 100%; text-align: center;">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <div>Loading...</div>
+        </div>
+    </div>
+}
+
+@code{
+    DateTime currentDate = DateTime.UtcNow;
+    CurrentUser User = null;
+
+    bool authenticated = false;
+    bool authenticationRunning = false;
+    bool authenticationComplete = false;
+
+    bool open = false;
+    bool dense = false;
+    bool preserveOpenState = false;
+    Breakpoint breakpoint = Breakpoint.Sm;
+    DrawerClipMode clipMode = DrawerClipMode.Always;
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.LightBlue.Darken4,
+            Secondary = Colors.Yellow.Darken4,
+            Background = Colors.Grey.Lighten2,
+            AppbarBackground = Colors.LightBlue.Darken2
+        },
+
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    };
+
+    protected async void Logout()
+    {
+        await Http.GetAsync("authentication/auth/logout");
+        NavManager.NavigateTo("https://test.vatsim.me:44347");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await Http.GetFromJsonAsync<CurrentUser>("user");
+        if(User == null)
+            NavManager.NavigateTo("https://test.vatsim.me:44347");
+
+        if (!authenticationRunning)
+        {
+            await Task.Run(async () =>
+            {
+                authenticationRunning = true;
+                while (true)
+                {
+                    authenticated = await Http.GetFromJsonAsync<bool>("authentication/auth/token");
+                    if (!authenticated)
+                        NavManager.NavigateTo("https://test.vatsim.me:44347");
+
+                    if(!authenticationComplete)
+                    {
+                        StateHasChanged();
+                        authenticationComplete = true;
+                    }
+
+                    await Task.Delay(60000);
+                }
+            });
+        }
+    }
+}
+
+
+
