@@ -7,9 +7,9 @@
     <MudCardContent>
         <MudForm>
             <MudTextField T="string" Label="VATSIM CID" Disabled="true" Value="@User.Member.Id" />
+            <MudTextField T="string" Label="Full Name" Disabled="true" Value="@User.Member.FullName" />
             <MudTextField T="string" Label="ATC Rating" Disabled="true" Value="@fullATCRating" />
             <MudTextField T="string" Label="Pilot Rating" Disabled="true" Value="@fullPilotRating" />
-            <MudTextField T="string" Label="Full Name" Disabled="true" Value="@User.PersonalDetails.FullName" />
             <MudTextField T="string" Label="Email" Disabled="true" Value="@User.PersonalDetails.Email" />
             <MudTextField T="string" Label="Region" Disabled="true" Value="@User.Region.Name" />
             <MudTextField T="string" Label="Division" Disabled="true" Value="@User.Division.Name" />
@@ -18,6 +18,8 @@
         </MudForm>
     </MudCardContent>
 </MudCard>
+
+
 @code {
     [CascadingParameter(Name = "User")]
     public CurrentUser User { get; set; }

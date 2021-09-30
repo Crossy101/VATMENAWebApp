@@ -9,15 +9,15 @@ using VATMENAWebApp.Server.Data;
 namespace VATMENAWebApp.Server.Migrations
 {
     [DbContext(typeof(VatmenaDbContext))]
-    [Migration("20210921112446_IntialCommit")]
-    partial class IntialCommit
+    [Migration("20210923134159_IntialBuild")]
+    partial class IntialBuild
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.10");
+                .HasAnnotation("ProductVersion", "5.0.9");
 
             modelBuilder.Entity("VATMENAWebApp.Shared.Models.Permissions.UserPermission", b =>
                 {
@@ -72,9 +72,6 @@ namespace VATMENAWebApp.Server.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("text");
-
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
@@ -92,6 +89,9 @@ namespace VATMENAWebApp.Server.Migrations
                     b.Property<string>("Division")
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastRatingChange")
                         .HasColumnType("datetime");
@@ -120,6 +120,40 @@ namespace VATMENAWebApp.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VatsimMembers");
+                });
+
+            modelBuilder.Entity("VATMENAWebApp.Shared.Models.VATSIM.Ratings.ATCRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Long")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Short")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ATCRatings");
+                });
+
+            modelBuilder.Entity("VATMENAWebApp.Shared.Models.VATSIM.Ratings.PilotRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Long_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Short_name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PilotRatings");
                 });
 
             modelBuilder.Entity("VATMENAWebApp.Shared.Models.VATSIM.Regions.VatsimRegion", b =>

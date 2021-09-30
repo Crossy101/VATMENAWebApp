@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using VATMENAWebApp.Server.Data;
+using VATMENAWebApp.Shared.Config;
 
 namespace VATMENAWebApp.Server
 {
@@ -27,6 +28,7 @@ namespace VATMENAWebApp.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddDbContext<VatmenaDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default")));
+            services.Configure<VATMENAConfig>(Configuration.GetSection("VATMENAConfig"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

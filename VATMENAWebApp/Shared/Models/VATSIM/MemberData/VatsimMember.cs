@@ -14,6 +14,7 @@ namespace VATMENAWebApp.Shared.Models.VATSIM.MemberData
         [Key]
         [MaxLength(10)]
         public string Id { get; set; }
+        public string FullName { get; set; }
         public int Rating { get; set; }
         [MaxLength(3)]
         public int PilotRating { get; set; }

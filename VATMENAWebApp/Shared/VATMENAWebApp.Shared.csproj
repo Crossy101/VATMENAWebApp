@@ -11,4 +11,12 @@
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Admin\" />
+    <Folder Include="Models\Events\Bookings\" />
+    <Folder Include="Models\VATMENA\Airports\" />
+    <Folder Include="Models\VATMENA\SubDivisions\" />
+    <Folder Include="Models\VATMENA\Staff\" />
+  </ItemGroup>
 </Project>

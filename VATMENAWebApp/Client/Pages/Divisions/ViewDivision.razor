@@ -1,0 +1,124 @@
+﻿@page "/Division/{DivisionId?}"
+@inject HttpClient httpClient
+@inject IJSRuntime jsRuntime
+@using VATMENAWebApp.Shared.PageModels;
+@using VATMENAWebApp.Shared.Models.VATSIM.MemberData
+@using VATMENAWebApp.Shared.PageModels.Division;
+
+
+@if (viewDivisionPageModel != null)
+{
+<MudPaper>
+    <div style="text-align: center; padding: 2% 2% 0% 2%;">
+        <h3>
+            <b>
+                @viewDivisionPageModel.CurrentDivision.Name
+            </b>
+        </h3>
+    </div>
+    <MudTimeline>
+        @foreach (var subDivision in viewDivisionPageModel.SubDivisions)
+        {
+            if (viewDivisionPageModel.SubDivisions.IndexOf(subDivision) % 2 == 0)
+            {
+                <MudTimelineItem Size="Size.Small" Color="Color.Info" Elevation="@(false ? 0 : 25)">
+                    <MudCard Outlined="@false" Elevation="25">
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@subDivision.Fullname - @subDivision.Code</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTimelineItem>
+            }
+            else
+            {
+                <MudTimelineItem Size="Size.Small" Color="Color.Info" Elevation="@(false ? 0 : 25)">
+                    <MudCard Outlined="@false" Elevation="25">
+                        <MudCardContent>
+                            <MudText Align="Align.End" Typo="Typo.h6">@subDivision.Code - @subDivision.Fullname</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTimelineItem>
+            }
+        }
+    </MudTimeline>
+</MudPaper>
+
+<div style="margin-top: 5%; padding: 2%;">
+    <MudTable Items="@vatsimDivisionMembers" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<VatsimMember,bool>(FilterDivisionMembers)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Division Members</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="vatsimDivisionMemberSearch" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>CID</MudTh>
+            <MudTh>Full Name</MudTh>
+            <MudTh>Sub Division</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="CID">
+                <MudElement HtmlTag="a" Style="color: red;" @onclick="@(e => UserStatsPage(e, context.Id))">@context.Id</MudElement>
+            </MudTd>
+            <MudTd DataLabel="Full Name">@context.FullName</MudTd>
+            <MudTd DataLabel="Sub Division">@context.SubDivision</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</div>
+}
+
+
+@code {
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+
+    public bool Dense { get; set; }
+    public bool Clickable { get; set; }
+    public bool Gutters { get; set; }
+
+    private int index = 0;
+
+    private string vatsimDivisionMemberSearch = "";
+    private IEnumerable<VatsimMember> vatsimDivisionMembers = new List<VatsimMember>();
+
+    private bool FilterDivisionMembers(VatsimMember element) => FilterDivisionMembers(element, vatsimDivisionMemberSearch);
+
+    [CascadingParameter(Name = "User")]
+    public CurrentUser User { get; set; }
+
+    [Parameter]
+    public string DivisionId { get; set; }
+
+    private ViewDivisionPageModel viewDivisionPageModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        viewDivisionPageModel = await httpClient.GetFromJsonAsync<ViewDivisionPageModel>($"Division?divisionId={DivisionId}");
+        vatsimDivisionMembers = viewDivisionPageModel.DivisionMembers;
+
+        StateHasChanged();
+    }
+
+    private bool FilterDivisionMembers(VatsimMember element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private async Task UserStatsPage(MouseEventArgs e, string CID)
+    {
+        string StatsURL = $"https://stats.vatsim.net/stats/{CID}";
+        await jsRuntime.InvokeAsync<object>("open", StatsURL, "_blank");
+    }
+}

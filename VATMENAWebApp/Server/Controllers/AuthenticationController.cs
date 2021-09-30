@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using VATMENAWebApp.Server.Data;
+using VATMENAWebApp.Shared.Config;
 using VATMENAWebApp.Shared.Controllers;
 using VATMENAWebApp.Shared.Models.Permissions;
 using VATMENAWebApp.Shared.Models.VATSIM;
@@ -23,14 +26,24 @@ namespace VATMENAWebApp.Server.Controllers
     {
         VatsimAuthManager vatsimAuthManager;
 
+        private readonly ILogger<AuthenticationController> _logger;
         private readonly VatmenaDbContext _context;
+        private readonly VATMENAConfig _config;
 
-        public AuthenticationController(VatmenaDbContext context)
+        public AuthenticationController(ILogger<AuthenticationController> logger, IOptions<VATMENAConfig> config, VatmenaDbContext context)
         {
             this.vatsimAuthManager = new VatsimAuthManager();
+            _logger = logger;
             _context = context;
+            _config = config.Value;
         }
 
+        /// <summary>
+        /// This function checks the current users auth_token once logged into VATSIM Auth API using OAuth 2.0.
+        /// Once complete, vatsim will send a code to the user 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get(string code)
         {
@@ -41,7 +54,7 @@ namespace VATMENAWebApp.Server.Controllers
                 {
                     bool tokenValid = await this.vatsimAuthManager.CheckTokenValidity(currentToken);
                     if(tokenValid)
-                        return Redirect("https://test.vatsim.me:44347/fetchData");
+                        return Redirect(_config.WebAppAddress + "/Dashboard");
                 }
 
 
@@ -60,7 +73,7 @@ namespace VATMENAWebApp.Server.Controllers
                 Response.Cookies.Append("vatsim_cid", vatsimUserDetails.data.cid, cookieOptions);
                 Response.Cookies.Append("auth_token", vatsimTokenResponse.access_token, cookieOptions);
 
-                return Redirect("https://test.vatsim.me:44347/metar");
+                return Redirect(_config.WebAppAddress + "/Dashboard");
             }
             catch(Exception ex)
             {
@@ -70,6 +83,10 @@ namespace VATMENAWebApp.Server.Controllers
 
         }
 
+        /// <summary>
+        /// This function is called on every web browser every 60 seconds and will confirm if the current user has an authenticated token to be logged in.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("auth/token")]
         public async Task<IActionResult> Token()
         {
@@ -86,6 +103,10 @@ namespace VATMENAWebApp.Server.Controllers
                 return Ok(false);
         }
 
+        /// <summary>
+        /// This function will log the user out and delete any cookies associated with the website
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("auth/logout")]
         public async Task<IActionResult> Logout()
         {
@@ -102,6 +123,11 @@ namespace VATMENAWebApp.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// If a user doesn't have a current account under the database then this function will perform all necessary database info to be added.
+        /// </summary>
+        /// <param name="vatsimUserDetails"></param>
+        /// <returns></returns>
         public async Task CreateUserAccount(VatsimUserDetails vatsimUserDetails)
         {
             HttpClient httpClient = new HttpClient();
@@ -109,6 +135,8 @@ namespace VATMENAWebApp.Server.Controllers
 
             string data = await response.Content.ReadAsStringAsync();
             VatsimMember vatsimMember = JsonConvert.DeserializeObject<VatsimMember>(data);
+            vatsimMember.FullName = vatsimUserDetails.data.personal.name_full;
+
             UserPermission userPermissions = new UserPermission
             {
                 Id = vatsimMember.Id,
@@ -121,7 +149,6 @@ namespace VATMENAWebApp.Server.Controllers
                 Id = vatsimMember.Id,
                 FirstName = vatsimUserDetails.data.personal.name_first,
                 LastName = vatsimUserDetails.data.personal.name_last,
-                FullName = vatsimUserDetails.data.personal.name_full,
                 Email = vatsimUserDetails.data.personal.email,
                 Country = vatsimUserDetails.data.personal.country.name
             };
