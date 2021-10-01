@@ -31,6 +31,7 @@
 @code {
     protected void Login()
     {
+        //DO NOT FORGET TO CHANGE THIS WHEN DEPLOYING!
         NavManager.NavigateTo("https://auth.vatsim.net/oauth/authorize?client_id=866&redirect_uri=https://test.vatsim.me:44347/authentication&response_type=code&scope=full_name+vatsim_details+email+country");
     }
 }

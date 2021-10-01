@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://test.vatsim.me:38170",
+      "applicationUrl": "http://test.vatsim.me",
       "sslPort": 44347
     }
   },
