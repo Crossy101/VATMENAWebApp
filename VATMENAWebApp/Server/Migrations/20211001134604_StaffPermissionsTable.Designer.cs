@@ -9,15 +9,50 @@ using VATMENAWebApp.Server.Data;
 namespace VATMENAWebApp.Server.Migrations
 {
     [DbContext(typeof(VatmenaDbContext))]
-    [Migration("20210922114515_AddedPilotATCRatingTables")]
-    partial class AddedPilotATCRatingTables
+    [Migration("20211001134604_StaffPermissionsTable")]
+    partial class StaffPermissionsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.10");
+                .HasAnnotation("ProductVersion", "5.0.9");
+
+            modelBuilder.Entity("VATMENAWebApp.Shared.Models.Admin.StaffPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountPermissions")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("DivisionStaff")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("EventPermissions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RatingPermissions")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RegionStaff")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("SiteAdmin")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("StaffPosition")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("SubDivisionStaff")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffPermissions");
+                });
 
             modelBuilder.Entity("VATMENAWebApp.Shared.Models.Permissions.UserPermission", b =>
                 {
@@ -72,9 +107,6 @@ namespace VATMENAWebApp.Server.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("text");
-
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
@@ -92,6 +124,9 @@ namespace VATMENAWebApp.Server.Migrations
                     b.Property<string>("Division")
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastRatingChange")
                         .HasColumnType("datetime");

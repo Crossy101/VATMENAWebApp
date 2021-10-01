@@ -8,37 +8,36 @@
 <MudSnackbarProvider />
 
 @if(authenticated && User != null) {
-    <div class="page">
-        <div class="main">
-            <MudLayout>
-                <MudAppBar Elevation="1" Dense="@dense">
-                    <MudContainer>@currentDate.ToString() UTC</MudContainer>
-                    <MudSpacer />
-                    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
-                </MudAppBar>
-                <MudDrawer @bind-Open="@open" ClipMode="clipMode" Breakpoint="@breakpoint" PreserveOpenState="@preserveOpenState" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
-                    <MudNavMenu Class="mud-width-full">
-                        <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
-                        <MudNavLink Href="/servers" Icon="fas fa-server">Servers</MudNavLink>
-                        <MudNavLink Href="/billing" Icon="fas fa-receipt">Billing</MudNavLink>
-                        <MudNavLink Href="/events" Icon="fas fa-calendar-check">Events</MudNavLink>
-                
-                        <MudNavGroup Title="Account Settings" Icon="fas fa-cogs">
-                            <MudNavLink Href="/profile" Icon="fas fa-users" IconColor="Color.Success">Profile</MudNavLink>
-                            <MudNavLink Href="/security" Icon="fas fa-user-shield" IconColor="Color.Info">Security</MudNavLink>
-                        </MudNavGroup>
-                    </MudNavMenu>
-                </MudDrawer>
-                <MudMainContent>
-                    <MudContainer Class="mt-6">
-                        <CascadingValue Value="User" Name="User">
-                            @Body
-                        </CascadingValue>
-                    </MudContainer>
-                </MudMainContent>
-            </MudLayout>
-        </div>
-    </div>
+        <MudLayout>
+            <MudAppBar Elevation="1" Dense="@dense">
+                <MudContainer>@currentDate.ToString() UTC</MudContainer>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+            </MudAppBar>
+            <MudDrawer @bind-Open="@open" ClipMode="clipMode" Breakpoint="@breakpoint" PreserveOpenState="@preserveOpenState" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+                <MudNavMenu Class="mud-width-full">
+                    <MudNavLink Href="/dashboard" Icon="fas fa-chart-line">Dashboard</MudNavLink>
+                    <MudNavLink Href="/servers" Icon="fas fa-server">Servers</MudNavLink>
+                    <MudNavLink Href="https://academy.vatsim.me" Icon="fas fa-user-graduate">Academy</MudNavLink>
+                    <MudNavLink Href="/events" Icon="fas fa-calendar-check">Events</MudNavLink>
+                    <MudNavGroup Title="Air Traffic Control" Icon="fas fa-user-shield">
+                        <MudNavLink Href="/Metar" Icon="fas fa-cloud-sun" IconColor="Color.Success">Airport METAR</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavGroup Title="Administrator" Icon="fas fa-user-shield">
+                        <MudNavLink Href="/Division/MENA" Icon="fas fa-globe-asia" IconColor="Color.Success">Manage Division</MudNavLink>
+                        <MudNavLink Href="/SubDivision" Icon="fas fa-globe-africa" IconColor="Color.Success">Manage SubDivision</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavLink Href="/profile" Icon="fas fa-id-card" IconColor="Color.Success">My Profile</MudNavLink>
+                </MudNavMenu>
+            </MudDrawer>
+            <MudMainContent>
+                <MudContainer Class="mt-6">
+                    <CascadingValue Value="User" Name="User">
+                        @Body
+                    </CascadingValue>
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
 } else {
     <div class="page" style="height: 100vh;">
         <div class="main" style="height: 100%; text-align: center;">
@@ -68,7 +67,7 @@
         {
             Primary = Colors.LightBlue.Darken4,
             Secondary = Colors.Yellow.Darken4,
-            Background = Colors.Grey.Lighten2,
+            Background = Colors.Grey.Lighten3,
             AppbarBackground = Colors.LightBlue.Darken2
         },
 

@@ -1,12 +1,27 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using MySql.EntityFrameworkCore.Metadata;
 
 namespace VATMENAWebApp.Server.Migrations
 {
-    public partial class IntialCommit : Migration
+    public partial class IntialBuild : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ATCRatings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Short = table.Column<string>(type: "text", nullable: true),
+                    Long = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ATCRatings", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "PersonalDetails",
                 columns: table => new
@@ -14,13 +29,26 @@ namespace VATMENAWebApp.Server.Migrations
                     Id = table.Column<string>(type: "varchar(767)", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
-                    FullName = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Country = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersonalDetails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PilotRatings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Short_name = table.Column<string>(type: "text", nullable: true),
+                    Long_name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PilotRatings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,6 +83,7 @@ namespace VATMENAWebApp.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     PilotRating = table.Column<int>(type: "int", maxLength: 3, nullable: false),
                     Susp_date = table.Column<DateTime>(type: "datetime", nullable: true),
@@ -99,7 +128,13 @@ namespace VATMENAWebApp.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ATCRatings");
+
+            migrationBuilder.DropTable(
                 name: "PersonalDetails");
+
+            migrationBuilder.DropTable(
+                name: "PilotRatings");
 
             migrationBuilder.DropTable(
                 name: "UserPermissions");

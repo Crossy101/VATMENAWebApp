@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VATMENAWebApp.Shared.Models.Admin;
 using VATMENAWebApp.Shared.Models.Permissions;
 using VATMENAWebApp.Shared.Models.VATSIM.Divisions;
 using VATMENAWebApp.Shared.Models.VATSIM.MemberData;
@@ -27,5 +28,6 @@ namespace VATMENAWebApp.Server.Data
         public DbSet<PersonalDetail> PersonalDetails { get; set; }
         public DbSet<PilotRating> PilotRatings { get; set; }
         public DbSet<ATCRating> ATCRatings { get; set; }
+        public DbSet<StaffPermission> StaffPermissions { get; set; }
     }
 }

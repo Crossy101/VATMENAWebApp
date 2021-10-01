@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using VATMENAWebApp.Server.Data;
+using VATMENAWebApp.Shared.Config;
 using VATMENAWebApp.Shared.Controllers;
 using VATMENAWebApp.Shared.Models.VATSIM.Divisions;
 using VATMENAWebApp.Shared.Models.VATSIM.MetarData;
@@ -22,13 +24,15 @@ namespace VATMENAWebApp.Server.Controllers.Vatsim
     {
         private readonly ILogger<VatsimController> _logger;
         private readonly VatmenaDbContext _context;
+        private readonly VATMENAConfig _config;
         private HttpClient httpClient;
 
-        public VatsimController(ILogger<VatsimController> logger, VatmenaDbContext context)
+        public VatsimController(ILogger<VatsimController> logger, IOptions<VATMENAConfig> config, VatmenaDbContext context)
         {
             httpClient = new HttpClient();
             _context = context;
             _logger = logger;
+            _config = config.Value;
         }
 
         [HttpGet("Data/Metar")]
